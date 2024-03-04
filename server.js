@@ -1,7 +1,7 @@
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
 const fingerprintJsServerApi = require("@fingerprintjs/fingerprintjs-pro-server-api");
-
+const { Sequelize } = require('sequelize');
+const UserModel = require("./models/User");
 const app = express();
 const PORT = 5000;
 
@@ -11,33 +11,15 @@ const client = new fingerprintJsServerApi.FingerprintJsServerApiClient({
     region: fingerprintJsServerApi.Region.Global,
 });
 
-// Connect to SQLite3 database
-const db = new sqlite3.Database("./db/database.db", (err) => {
-    if (err) {
-        console.log("Error connecting to DB", err);
-    } else {
-        console.log("Connected to SQLite database");
 
-        // Create users table if it doesn't exist
-        db.run(
-            `CREATE TABLE IF NOT EXISTS users (
-   		 id INTEGER PRIMARY KEY AUTOINCREMENT,
-   		 email TEXT NOT NULL UNIQUE,
-   		 password TEXT NOT NULL,
-   		 fingerprint TEXT UNIQUE NOT NULL
-   	 )`,
-            (createErr) => {
-                if (createErr) {
-                    console.error("Error creating users table:", createErr);
-                } else {
-                    console.log("Users table created or already exists.");
-                    // Start the server after the database connection and table creation are successful
-                    startServer();
-                }
-            }
-        );
-    }
-});
+// Initialize sequelize with SQLite database connection
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './db/database.db'
+})
+
+// Create and return a User model instance
+const User = UserModel(sequelize);
 
 // Set the view engine to ejs
 app.set("view engine", "ejs");
@@ -88,34 +70,30 @@ app.post("/register", async (req, res) => {
     if (errors.length > 0) {
         res.render("register", { errors });
     } else {
-        // Attempt to save the user to DB
-        db.run(
-            "INSERT INTO users (email, password, fingerprint) VALUES (?, ?, ?)",
-            [email, password, eventData.products.identification.data.visitorId],
-            function (err) {
-                if (err) {
-                    // Unable to save the user to DB
-                    // Handle the error
-                    if (
-                        err.message ===
-                        "SQLITE_CONSTRAINT: UNIQUE constraint failed: users.fingerprint"
-                    ) {
-                        errors.push(
-                            "Looks like you already have an account. Please log in."
-                        );
-                        res.render("register", { errors });
-                    } else {
-                        console.error("Error inserting user:", err);
-                    }
-                } else {
-                    // User saved to DB successfully
-                    // Redirect the user to the dashboard
-                    res.redirect("/dashboard");
-                }
+        try {
+            // Attempt to create a new user in the database
+            await User.create({
+                email,
+                password,
+                fingerprint: eventData.products.identification.data.visitorId
+            });
+            // Redirect the user to the dashboard upon successful registration
+            res.redirect("/dashboard");
+        } catch (error) {
+            // Handle error appropriately
+            if(error.name === "SequelizeUniqueConstraintError"){
+                errors.push(
+                    "Looks like you already have an account. Please log in."
+                )
+
+                res.render("register", { errors })
+            } else {
+                console.error("Error inserting user:", error);
             }
-        );
+        }
     }
 });
+
 
 // Display the dashboard
 app.get("/dashboard", (req, res) => {
@@ -128,3 +106,11 @@ function startServer() {
         console.log(`Server is running on http://localhost:${PORT}`);
     });
 }
+
+(async () => {
+    await sequelize.sync({ alter: true })
+
+    console.log('Model synchronized successfully')
+
+    startServer()
+})()
