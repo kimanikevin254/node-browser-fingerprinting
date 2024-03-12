@@ -124,7 +124,7 @@ app.post("/register", async (req, res) => {
 
     // Render appropriate errors
     if(validation.errors.length > 0){
-        return res.render("register", { errors })
+        return res.render("register", { errors: validation.errors })
     }
 
     // Create user
