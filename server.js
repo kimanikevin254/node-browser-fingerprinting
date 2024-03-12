@@ -8,7 +8,7 @@ const PORT = 5000;
 
 // Initialize the Fingerprint Server API client instance
 const client = new fingerprintJsServerApi.FingerprintJsServerApiClient({
-    apiKey: "B2x4yzOiijmJdOTYZeBV",
+    apiKey: "<your-secret-key>",
     region: fingerprintJsServerApi.Region.Global,
 });
 
