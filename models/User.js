@@ -15,11 +15,15 @@ module.exports = (sequelize) => {
         password: {
             type: DataTypes.TEXT,
             allowNull: false
-        },
-        fingerprint: {
-            type: DataTypes.TEXT,
-            allowNull: false
         }
+    }, {
+        timestamps: false
+    });
+
+
+    // Define association to DeviceFingerprint model
+    User.hasMany(sequelize.models.DeviceFingerprint, {
+        foreignKey: 'userId', // This will add a userId column to the DeviceFingerprint table
     });
 
     return User;
