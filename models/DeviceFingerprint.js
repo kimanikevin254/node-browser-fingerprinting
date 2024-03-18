@@ -10,13 +10,16 @@ module.exports = (sequelize) => {
         fingerprint: {
             type: DataTypes.TEXT,
             allowNull: false
-        },
-        lastCreationTimestamp: {
-            type: DataTypes.DATE
         }
     }, {
-        timestamps: false
+        timestamps: true
     });
+
+    // Define association to User model
+    // One device fingerprint can belong to multiple Users
+    DeviceFingerprint.hasMany(sequelize.models.User, {
+        foreignKey: 'fingerprintId'
+    })
 
     return DeviceFingerprint;
 };
