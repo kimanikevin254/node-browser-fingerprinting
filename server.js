@@ -98,7 +98,7 @@ app.post("/register", async (req, res) => {
             console.log('no of signups', signupsWithinLastThirtyMinutes);
 
             // Check if more than a certain number of signups have occurred within the last 30 minutes
-            const maxSignupsAllowed = 3; // Example: Maximum 3 signups allowed within 30 minutes
+            const maxSignupsAllowed = 1; // Only one signup is allowed every 30 minutes
             if (signupsWithinLastThirtyMinutes > maxSignupsAllowed) {
                 // Handle the condition where more than the allowed number of signups occurred within the last 30 minutes
                 return res.render("register", { errors: ["Unable to create account. Maximum signups exceeded."] });

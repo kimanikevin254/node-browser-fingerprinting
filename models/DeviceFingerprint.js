@@ -11,8 +11,6 @@ module.exports = (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: false
         }
-    }, {
-        timestamps: true
     });
 
     // Define association to User model
