@@ -101,7 +101,7 @@ app.post("/register", async (req, res) => {
             const maxSignupsAllowed = 1; // Only one signup is allowed every 30 minutes
             if (signupsWithinLastThirtyMinutes >= maxSignupsAllowed) {
                 // Handle the condition where more than the allowed number of signups occurred within the last 30 minutes
-                return res.render("register", { errors: ["Unable to create account. Maximum signups exceeded."] });
+                return res.render("register", { errors: ["Unable to create account. Only one account can be created every 30 minutes."] });
             }
     
             // Save the user with the existing fingerprint reference
