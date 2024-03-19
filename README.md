@@ -22,6 +22,6 @@ To run this application locally:
 
 4. Open `views/register.ejs` and replace `<your-public-api-key>` with your unique public API key which you can get from the [Fingerprint Pro dashboard](https://dashboard.fingerprint.com/) in **App Settings** > **API keys**.
 
-5. Open `server.ejs` and replace `<your-secret-key>` with the correct value which you can obtain from the [Fingerprint Pro dashboard](https://dashboard.fingerprint.com/) in **App Settings** > **API keys** > **CREATE SECRET KEY**. Make sure you select "Secret" for the type of the key.
+5. Open `server.js` and replace `<your-secret-key>` with the correct value which you can obtain from the [Fingerprint Pro dashboard](https://dashboard.fingerprint.com/) in **App Settings** > **API keys** > **CREATE SECRET KEY**. Make sure you select "Secret" for the type of the key.
 
 6. Run the server using the command `node server.js`.
