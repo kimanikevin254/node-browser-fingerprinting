@@ -1,11 +1,11 @@
 const express = require("express");
 const fingerprintJsServerApi = require("@fingerprintjs/fingerprintjs-pro-server-api");
 const { Sequelize, Op } = require('sequelize');
+const bcrypt = require('bcrypt')
 const UserModel = require("./models/User");
 const DeviceFingerprintModel = require('./models/DeviceFingerprint')
 const app = express();
-const PORT = 5001;
-const bcrypt = require('bcrypt')
+const PORT = 5000;
 
 // Initialize the Fingerprint Server API client instance
 const client = new fingerprintJsServerApi.FingerprintJsServerApiClient({
