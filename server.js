@@ -4,7 +4,8 @@ const { Sequelize, Op } = require('sequelize');
 const UserModel = require("./models/User");
 const DeviceFingerprintModel = require('./models/DeviceFingerprint')
 const app = express();
-const PORT = 5000;
+const PORT = 5001;
+const bcrypt = require('bcrypt')
 
 // Initialize the Fingerprint Server API client instance
 const client = new fingerprintJsServerApi.FingerprintJsServerApiClient({
@@ -104,8 +105,11 @@ app.post("/register", async (req, res) => {
                 return res.render("register", { errors: ["Unable to create account. Only one account can be created every 30 minutes."] });
             }
     
+            // Hash the password
+            let hashedPassword = await bcrypt.hash(password, 10)
+
             // Save the user with the existing fingerprint reference
-            await User.create({ email, password, fingerprintId: existingFingerprint.id });
+            await User.create({ email, password: hashedPassword, fingerprintId: existingFingerprint.id });
 
     
             // Redirect the user to the dashboard upon successful registration
