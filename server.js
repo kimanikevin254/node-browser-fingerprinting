@@ -4,12 +4,13 @@ const { Sequelize, Op } = require('sequelize');
 const bcrypt = require('bcrypt')
 const UserModel = require("./models/User");
 const DeviceFingerprintModel = require('./models/DeviceFingerprint')
+
 const app = express();
 const PORT = 5000;
 
 // Initialize the Fingerprint Server API client instance
 const client = new fingerprintJsServerApi.FingerprintJsServerApiClient({
-    apiKey: "<your-secret-key>",
+    apiKey: "SECRET_API_KEY",
     region: fingerprintJsServerApi.Region.Global,
 });
 
@@ -31,6 +32,7 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
 // Define routes
+// Display the registration page
 app.get("/register", (req, res) => {
     res.render("register");
 });
@@ -61,11 +63,6 @@ app.post("/register", async (req, res) => {
         // Make sure the user is not a bot
         if (eventData.products.botd.data.bot.result === "bad") {
             errors.push("Bot detected");
-        }
-
-        // Make sure the user is not using a VPN
-        if (eventData.products.vpn.data.result === true) {
-            errors.push("VPN detected");
         }
 
         return {
